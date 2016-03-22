@@ -1,6 +1,7 @@
-// TextReader v1.00
+// TextReader v1.01
 
 #include <stdio.h>  // fopen
+#include <stdlib.h> // atof
 #include <iomanip>  // setw
 #include <iostream> // cout
 #include "TextReader.hpp"

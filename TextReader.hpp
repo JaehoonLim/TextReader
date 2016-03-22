@@ -1,4 +1,4 @@
-// TextReader v1.10
+// TextReader v2.00
 
 #ifndef __TextReader_hpp_Inclueded__
 #define __TextReader_hpp_Inclueded__
@@ -9,16 +9,16 @@
 #include <iterator>
 
 typedef std::string st;
-typedef std::vector<float> vec_f;
-typedef vec_f::iterator vec_f_it;
+typedef std::vector<double> vec_d;
+typedef vec_d::iterator vec_d_it;
 typedef std::vector<st> vec_s;
 typedef vec_s::iterator vec_s_it;
-typedef std::map<st, float> map_f;
-typedef map_f::iterator map_f_it;
+typedef std::map<st, double> map_d;
+typedef map_d::iterator map_d_it;
 typedef std::map<st, st> map_s;
 typedef std::map<st, st>::iterator map_s_it;
-typedef std::map<st, vec_f> map_sf;
-typedef std::map<st, vec_f>::iterator map_sf_it;
+typedef std::map<st, vec_d> map_sd;
+typedef std::map<st, vec_d>::iterator map_sd_it;
 typedef std::map<st, vec_s> map_ss;
 typedef std::map<st, vec_s>::iterator map_ss_it;
 
@@ -32,30 +32,41 @@ public:
     void ReadVariables();
     void PrintoutVariables();
 
-    float GetNumber(st);
-    float GetNumber(st,int);
-    int GetNumberInt(st);
-    int GetNumberInt(st,int);
-    st GetText(st);
-    st GetText(st,int);
+    double GetNumber(st,bool PrintError = true);
+    double GetNumber(st,int,bool PrintError = true);
+    int GetNumberInt(st,bool PrintError = true);
+    int GetNumberInt(st,int,bool PrintError = true);
+    unsigned int GetNumberUint(st,bool PrintError = true);
+    unsigned int GetNumberUint(st,int,bool PrintError = true);
+    float GetNumberFloat(st,bool PrintError = true);
+    float GetNumberFloat(st,int,bool PrintError = true);
+    double GetNumberDouble(st,bool PrintError = true);
+    double GetNumberDouble(st,int,bool PrintError = true);
+    st GetText(st,bool PrintError = true);
+    st GetText(st,int,bool PrintError = true);
+    bool GetBool(st,bool PrintError = true);
+    bool GetBool(st,int,bool PrintError = true);
     bool Check(st);
+    bool CheckNumber(st);
+    bool CheckText(st);
+    bool CheckArray(st);
     int Size(st);
 
-    map_f ReturnMap(map_f);
+    map_d ReturnMap(map_d);
     map_s ReturnMap(map_s);
-    map_sf ReturnMap(map_sf);
+    map_sd ReturnMap(map_sd);
     map_ss ReturnMap(map_ss);
 
 private:
 
     FILE *configfile;
-    map_f CVf; // Cut_Variable_float_type
+    map_d CVf; // Cut_Variable_floating-point_type
     map_s CVt; // Cut_Variable_text_type
-    map_sf CVfa; //Cut_Variable_float_type_array
+    map_sd CVfa; //Cut_Variable_floating-point_type_array
     map_ss CVta; // Cut_Variable_text_type_array
-    map_f_it CVf_it;
+    map_d_it CVf_it;
     map_s_it CVt_it;
-    map_sf_it CVfa_it;
+    map_sd_it CVfa_it;
     map_ss_it CVta_it;
 
 };

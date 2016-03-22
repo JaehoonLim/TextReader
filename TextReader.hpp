@@ -1,4 +1,4 @@
-// TextReader v1.01
+// TextReader v1.10
 
 #ifndef __TextReader_hpp_Inclueded__
 #define __TextReader_hpp_Inclueded__
@@ -40,6 +40,11 @@ public:
     st GetText(st,int);
     bool Check(st);
     int Size(st);
+
+    map_f ReturnMap(map_f);
+    map_s ReturnMap(map_s);
+    map_sf ReturnMap(map_sf);
+    map_ss ReturnMap(map_ss);
 
 private:
 

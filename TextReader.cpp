@@ -1,4 +1,4 @@
-// TextReader v1.01
+// TextReader v1.10
 
 #include <stdio.h>  // fopen
 #include <stdlib.h> // atof
@@ -379,3 +379,20 @@ int TextReader::Size(st CutName){
     if ((CVta_it = CVta.find(CutName.c_str())) != CVta.end()) { Variable_size = (CVta_it->second).size(); }
     return Variable_size;
 }
+
+map_f TextReader::ReturnMap(map_f MapType){
+    return CVf;
+}
+
+map_s TextReader::ReturnMap(map_s MapType){
+    return CVt;
+}
+
+map_sf TextReader::ReturnMap(map_sf MapType){
+    return CVfa;
+}
+
+map_ss TextReader::ReturnMap(map_ss MapType){
+    return CVta;
+}
+

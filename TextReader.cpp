@@ -1,9 +1,10 @@
-// TextReader v2.00
+// TextReader v2.10
 
 #include <stdio.h>  // fopen
 #include <stdlib.h> // atof
 #include <iomanip>  // setw
 #include <iostream> // cout
+#include <algorithm> // find
 #include "TextReader.hpp"
 
 TextReader::TextReader(){
@@ -112,6 +113,9 @@ void TextReader::ReadVariables() {
 		    case ':':
 			state = 21;
 			break;
+		    case '=':
+			state = 21;
+			break;
 		    default:
 			Variable_name.append(input_buffer);
 			break;
@@ -124,6 +128,9 @@ void TextReader::ReadVariables() {
 		    case '\t':
 			break;
 		    case ':':
+			state = 21;
+			break;
+		    case '=':
 			state = 21;
 			break;
 		    default:
@@ -453,66 +460,54 @@ st TextReader::GetText(st CutName, int array_index, bool PrintError){
 }
 
 bool TextReader::GetBool(st CutName, bool PrintError){
-    double BoolDouble;
-    st BoolText;
+    double BoolDouble = 0;
+    st BoolText = "false";
     if(Check(CutName)) {
-	if(CheckArray(CutName)) {
-	    if(PrintError) std::cout << "Warning - GetBool(\"" << CutName << "\") : \"" << CutName << "\" is array" << std::endl;
-	    if(CheckNumber(CutName)) {
+	if(CheckNumber(CutName)) {
+
+	    if(CheckArray(CutName)) {
+		if(PrintError) std::cout << "Warning - GetBool(\"" << CutName << "\") : \"" << CutName << "\" is array" << std::endl;
 		BoolDouble = double(((CVfa.find(CutName.c_str()))->second).at(0));
-		if(BoolDouble == 1) {
-		    return true;
-		}
-		else if(BoolDouble == 0) {
-		    return false;
-		}
-		else {
-		    if(PrintError) std::cout << "Error - GetBool(\"" << CutName << "\") : \"" << CutName << "\" is not bool type" << std::endl;
-		    return false;
-		}
 	    }
 	    else {
-		BoolText = ((CVta.find(CutName.c_str()))->second).at(0);
-		if (BoolText == "1" || BoolText == "true" || BoolText == "True" || BoolText == "TRUE") {
-		    return true;
-		}
-		else if (BoolText == "0" || BoolText == "false" || BoolText == "False" || BoolText == "FALSE") {
-		    return false;
-		}
-		else {
-		    if(PrintError) std::cout << "Error - GetBool(\"" << CutName << "\") : \"" << CutName << "\" is not bool type" << std::endl;
-		    return false;
-		}
+		BoolDouble = double((CVf.find(CutName))->second);
 	    }
+
+	    if(BoolDouble == 1) {
+		return true;
+	    }
+	    else if(BoolDouble == 0) {
+		return false;
+	    }
+	    else {
+		if(PrintError) std::cout << "Error - GetBool(\"" << CutName << "\") : \"" << CutName << "\" is not bool type" << std::endl;
+		return false;
+	    }
+
 	}
 	else {
-	    if(CheckNumber(CutName)) {
-		BoolDouble = double((CVf.find(CutName))->second);
-		if(BoolDouble == 1) {
-		    return true;
-		}
-		else if(BoolDouble == 0) {
-		    return false;
-		}
-		else {
-		    if(PrintError) std::cout << "Error - GetBool(\"" << CutName << "\") : \"" << CutName << "\" is not bool type" << std::endl;
-		    return false;
-		}
+
+	    if(CheckArray(CutName)) {
+		if(PrintError) std::cout << "Warning - GetBool(\"" << CutName << "\") : \"" << CutName << "\" is array" << std::endl;
+		BoolText = ((CVta.find(CutName.c_str()))->second).at(0);
 	    }
 	    else {
 		BoolText = (CVt.find(CutName))->second;
-		if (BoolText == "1" || BoolText == "true" || BoolText == "True" || BoolText == "TRUE") {
-		    return true;
-		}
-		else if (BoolText == "0" || BoolText == "false" || BoolText == "False" || BoolText == "FALSE") {
-		    return false;
-		}
-		else {
-		    if(PrintError) std::cout << "Error - GetBool(\"" << CutName << "\") : \"" << CutName << "\" is not bool type" << std::endl;
-		    return false;
-		}
 	    }
+
+	    if (BoolText == "1" || BoolText == "true" || BoolText == "True" || BoolText == "TRUE") {
+		return true;
+	    }
+	    else if (BoolText == "0" || BoolText == "false" || BoolText == "False" || BoolText == "FALSE") {
+		return false;
+	    }
+	    else {
+		if(PrintError) std::cout << "Error - GetBool(\"" << CutName << "\") : \"" << CutName << "\" is not bool type" << std::endl;
+		return false;
+	    }
+
 	}
+
     }
     else {
 	if(PrintError) std::cout << "Error - GetBool(\"" << CutName << "\") : Cannot find \"" << CutName << "\"" << std::endl;
@@ -521,70 +516,222 @@ bool TextReader::GetBool(st CutName, bool PrintError){
 }
 
 bool TextReader::GetBool(st CutName, int array_index, bool PrintError){
-    double BoolDouble;
-    st BoolText;
+    double BoolDouble = 0;
+    st BoolText = "false";
     if(Check(CutName)) {
-	if(CheckArray(CutName)) {
-	    if(CheckNumber(CutName)) {
-		BoolDouble = double(((CVfa.find(CutName.c_str()))->second).at(array_index-1));
-		if(BoolDouble == 1) {
-		    return true;
-		}
-		else if(BoolDouble == 0) {
-		    return false;
+	if(CheckNumber(CutName)) {
+	    if(CheckArray(CutName)) {
+		if (array_index > 0 && (CVta_it->second).size() >= array_index) {
+		    BoolDouble = double(((CVfa.find(CutName.c_str()))->second).at(array_index-1));
 		}
 		else {
-		    if(PrintError) std::cout << "Error - GetBool(\"" << CutName << "\"," << array_index << ") : \"" << array_index << "\"th \"" << CutName << "\" is not bool type" << std::endl;
-		    return false;
+		    if(PrintError) std::cout << "Error - GetBool(\"" << CutName << "\"," << array_index << ") : Cannot find index\"" << array_index << "\"" << std::endl;
 		}
 	    }
 	    else {
-		BoolText = ((CVta.find(CutName.c_str()))->second).at(array_index-1);
-		if (BoolText == "1" || BoolText == "true" || BoolText == "True" || BoolText == "TRUE") {
-		    return true;
-		}
-		else if (BoolText == "0" || BoolText == "false" || BoolText == "False" || BoolText == "FALSE") {
-		    return false;
-		}
-		else {
-		    if(PrintError) std::cout << "Error - GetBool(\"" << CutName << "\"," << array_index << ") : \"" << array_index << "\"th \"" << CutName << "\" is not bool type" << std::endl;
-		    return false;
-		}
+		if(PrintError) std::cout << "Warning - GetBool(\"" << CutName << "\"," << array_index << ") : \"" << CutName << "\" is not array" << std::endl;
+		BoolDouble = double((CVf.find(CutName))->second);
 	    }
+
+	    if(BoolDouble == 1) {
+		return true;
+	    }
+	    else if(BoolDouble == 0) {
+		return false;
+	    }
+	    else {
+		if(PrintError) std::cout << "Error - GetBool(\"" << CutName << "\"," << array_index << ") : \"" << array_index << "\"th \"" << CutName << "\" is not bool type" << std::endl;
+		return false;
+	    }
+
 	}
 	else {
-	    if(PrintError) std::cout << "Warning - GetBool(\"" << CutName << "\"," << array_index << ") : \"" << CutName << "\" is not array" << std::endl;
-	    if(CheckNumber(CutName)) {
-		BoolDouble = double((CVf.find(CutName))->second);
-		if(BoolDouble == 1) {
-		    return true;
-		}
-		else if(BoolDouble == 0) {
-		    return false;
+
+	    if(CheckArray(CutName)) {
+		if (array_index > 0 && (CVta_it->second).size() >= array_index) {
+		    BoolText = ((CVta.find(CutName.c_str()))->second).at(array_index-1);
 		}
 		else {
-		    if(PrintError) std::cout << "Error - GetBool(\"" << CutName << "\"," << array_index << ") : \"" << CutName << "\" is not bool type" << std::endl;
-		    return false;
+		    if(PrintError) std::cout << "Error - GetBool(\"" << CutName << "\"," << array_index << ") : Cannot find index\"" << array_index << "\"" << std::endl;
 		}
 	    }
 	    else {
+		if(PrintError) std::cout << "Warning - GetBool(\"" << CutName << "\"," << array_index << ") : \"" << CutName << "\" is not array" << std::endl;
 		BoolText = (CVt.find(CutName))->second;
-		if (BoolText == "1" || BoolText == "true" || BoolText == "True" || BoolText == "TRUE") {
-		    return true;
-		}
-		else if (BoolText == "0" || BoolText == "false" || BoolText == "False" || BoolText == "FALSE") {
-		    return false;
-		}
-		else {
-		    if(PrintError) std::cout << "Error - GetBool(\"" << CutName << "\"," << array_index << ") : \"" << CutName << "\" is not bool type" << std::endl;
-		    return false;
-		}
 	    }
+
+	    if (BoolText == "1" || BoolText == "true" || BoolText == "True" || BoolText == "TRUE") {
+		return true;
+	    }
+	    else if (BoolText == "0" || BoolText == "false" || BoolText == "False" || BoolText == "FALSE") {
+		return false;
+	    }
+	    else {
+		if(PrintError) std::cout << "Error - GetBool(\"" << CutName << "\"," << array_index << ") : \"" << array_index << "\"th \"" << CutName << "\" is not bool type" << std::endl;
+		return false;
+	    }
+
 	}
+
     }
     else {
 	if(PrintError) std::cout << "Error - GetBool(\"" << CutName << "\"," << array_index << ") : Cannot find \"" << CutName << "\"" << std::endl;
 	return false;
+    }
+}
+
+int TextReader::GetIndex(st CutName, int array_value, bool PrintError){
+    if(CheckNumber(CutName)) {
+	if(CheckArray(CutName)) {
+	    CVfa_it = CVfa.find(CutName.c_str());
+	    vec_d_it d_it = find( (CVfa_it->second).begin(), (CVfa_it->second).end(), array_value );
+	    if (d_it != (CVfa_it->second).end() ) {
+		return int( d_it - (CVfa_it->second).begin() )+1;
+	    }
+	    else {
+		if(PrintError) std::cout << "Error - GetIndex(\"" << CutName << "\"," << array_value << ") : Cannot find number \"" << array_value << "\" in \"" << CutName << "\"" << std::endl;
+		return -999;
+	    }
+	}
+	else {
+	    if(PrintError) std::cout << "Warning - GetIndex(\"" << CutName << "\"," << array_value << ") : \"" << CutName << "\" is not array" << std::endl;
+	    CVf_it = CVf.find(CutName.c_str());
+	    if (CVf_it->second == array_value) {
+		return 1;
+	    }
+	    else {
+		if(PrintError) std::cout << "Error - GetIndex(\"" << CutName << "\"," << array_value << ") : Cannot find number \"" << array_value << "\" in \"" << CutName << "\"" << std::endl;
+		return -999;
+	    }
+	}
+    }
+    else {
+	if(PrintError) std::cout << "Error - GetIndex(\"" << CutName << "\"," << array_value << ") : Cannot find number \"" << array_value << "\" in \"" << CutName << "\"" << std::endl;
+	return -999;
+    }
+}
+
+int TextReader::GetIndex(st CutName, unsigned int array_value, bool PrintError){
+    if(CheckNumber(CutName)) {
+	if(CheckArray(CutName)) {
+	    CVfa_it = CVfa.find(CutName.c_str());
+	    vec_d_it d_it = find( (CVfa_it->second).begin(), (CVfa_it->second).end(), array_value );
+	    if (d_it != (CVfa_it->second).end() ) {
+		return int( d_it - (CVfa_it->second).begin() )+1;
+	    }
+	    else {
+		if(PrintError) std::cout << "Error - GetIndex(\"" << CutName << "\"," << array_value << ") : Cannot find number \"" << array_value << "\" in \"" << CutName << "\"" << std::endl;
+		return -999;
+	    }
+	}
+	else {
+	    if(PrintError) std::cout << "Warning - GetIndex(\"" << CutName << "\"," << array_value << ") : \"" << CutName << "\" is not array" << std::endl;
+	    CVf_it = CVf.find(CutName.c_str());
+	    if (CVf_it->second == array_value) {
+		return 1;
+	    }
+	    else {
+		if(PrintError) std::cout << "Error - GetIndex(\"" << CutName << "\"," << array_value << ") : Cannot find number \"" << array_value << "\" in \"" << CutName << "\"" << std::endl;
+		return -999;
+	    }
+	}
+    }
+    else {
+	if(PrintError) std::cout << "Error - GetIndex(\"" << CutName << "\"," << array_value << ") : Cannot find number \"" << array_value << "\" in \"" << CutName << "\"" << std::endl;
+	return -999;
+    }
+}
+
+int TextReader::GetIndex(st CutName, double array_value, bool PrintError){
+    if(CheckNumber(CutName)) {
+	if(CheckArray(CutName)) {
+	    CVfa_it = CVfa.find(CutName.c_str());
+	    vec_d_it d_it = find( (CVfa_it->second).begin(), (CVfa_it->second).end(), array_value );
+	    if (d_it != (CVfa_it->second).end() ) {
+		return int( d_it - (CVfa_it->second).begin() )+1;
+	    }
+	    else {
+		if(PrintError) std::cout << "Error - GetIndex(\"" << CutName << "\"," << array_value << ") : Cannot find number \"" << array_value << "\" in \"" << CutName << "\"" << std::endl;
+		return -999;
+	    }
+	}
+	else {
+	    if(PrintError) std::cout << "Warning - GetIndex(\"" << CutName << "\"," << array_value << ") : \"" << CutName << "\" is not array" << std::endl;
+	    CVf_it = CVf.find(CutName.c_str());
+	    if (CVf_it->second == array_value) {
+		return 1;
+	    }
+	    else {
+		if(PrintError) std::cout << "Error - GetIndex(\"" << CutName << "\"," << array_value << ") : Cannot find number \"" << array_value << "\" in \"" << CutName << "\"" << std::endl;
+		return -999;
+	    }
+	}
+    }
+    else {
+	if(PrintError) std::cout << "Error - GetIndex(\"" << CutName << "\"," << array_value << ") : Cannot find number \"" << array_value << "\" in \"" << CutName << "\"" << std::endl;
+	return -999;
+    }
+}
+
+int TextReader::GetIndex(st CutName, float array_value, bool PrintError){
+    if(CheckNumber(CutName)) {
+	if(CheckArray(CutName)) {
+	    CVfa_it = CVfa.find(CutName.c_str());
+	    vec_d_it d_it = find( (CVfa_it->second).begin(), (CVfa_it->second).end(), array_value );
+	    if (d_it != (CVfa_it->second).end() ) {
+		return int( d_it - (CVfa_it->second).begin() )+1;
+	    }
+	    else {
+		if(PrintError) std::cout << "Error - GetIndex(\"" << CutName << "\"," << array_value << ") : Cannot find number \"" << array_value << "\" in \"" << CutName << "\"" << std::endl;
+		return -999;
+	    }
+	}
+	else {
+	    if(PrintError) std::cout << "Warning - GetIndex(\"" << CutName << "\"," << array_value << ") : \"" << CutName << "\" is not array" << std::endl;
+	    CVf_it = CVf.find(CutName.c_str());
+	    if (CVf_it->second == array_value) {
+		return 1;
+	    }
+	    else {
+		if(PrintError) std::cout << "Error - GetIndex(\"" << CutName << "\"," << array_value << ") : Cannot find number \"" << array_value << "\" in \"" << CutName << "\"" << std::endl;
+		return -999;
+	    }
+	}
+    }
+    else {
+	if(PrintError) std::cout << "Error - GetIndex(\"" << CutName << "\"," << array_value << ") : Cannot find number \"" << array_value << "\" in \"" << CutName << "\"" << std::endl;
+	return -999;
+    }
+}
+
+int TextReader::GetIndex(st CutName, st array_value, bool PrintError){
+    if(CheckText(CutName)) {
+	if(CheckArray(CutName)) {
+	    CVta_it = CVta.find(CutName.c_str());
+	    vec_s_it s_it = find( (CVta_it->second).begin(), (CVta_it->second).end(), array_value );
+	    if (s_it != (CVta_it->second).end() ) {
+		return int( s_it - (CVta_it->second).begin() )+1;
+	    }
+	    else {
+		if(PrintError) std::cout << "Error - GetIndex(\"" << CutName << "\"," << array_value << ") : Cannot find text \"" << array_value << "\" in \"" << CutName << "\"" << std::endl;
+		return -999;
+	    }
+	}
+	else {
+	    if(PrintError) std::cout << "Warning - GetIndex(\"" << CutName << "\"," << array_value << ") : \"" << CutName << "\" is not array" << std::endl;
+	    CVt_it = CVt.find(CutName.c_str());
+	    if (CVt_it->second == array_value) {
+		return 1;
+	    }
+	    else {
+		if(PrintError) std::cout << "Error - GetIndex(\"" << CutName << "\"," << array_value << ") : Cannot find text \"" << array_value << "\" in \"" << CutName << "\"" << std::endl;
+		return -999;
+	    }
+	}
+    }
+    else {
+	if(PrintError) std::cout << "Error - GetIndex(\"" << CutName << "\"," << array_value << ") : Cannot find text \"" << array_value << "\" in \"" << CutName << "\"" << std::endl;
+	return -999;
     }
 }
 

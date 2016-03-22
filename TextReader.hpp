@@ -1,4 +1,4 @@
-// TextReader v1.00
+// TextReader v1.01
 
 #ifndef __TextReader_hpp_Inclueded__
 #define __TextReader_hpp_Inclueded__

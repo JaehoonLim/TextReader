@@ -1,4 +1,4 @@
-// TextReader v2.00
+// TextReader v2.10
 
 #ifndef __TextReader_hpp_Inclueded__
 #define __TextReader_hpp_Inclueded__
@@ -51,6 +51,11 @@ public:
     bool CheckText(st);
     bool CheckArray(st);
     int Size(st);
+    int GetIndex(st,int,bool PrintError = true);
+    int GetIndex(st,unsigned int,bool PrintError = true);
+    int GetIndex(st,double,bool PrintError = true);
+    int GetIndex(st,float,bool PrintError = true);
+    int GetIndex(st,st,bool PrintError = true);
 
     map_d ReturnMap(map_d);
     map_s ReturnMap(map_s);

@@ -1,4 +1,4 @@
-// TextReader v2.10
+// TextReader v2.11
 
 #include <stdio.h>  // fopen
 #include <stdlib.h> // atof
@@ -16,12 +16,14 @@ TextReader::~TextReader() {
     fclose(configfile);
 
 }
-void TextReader::ReadFile(st inputconfig){
+bool TextReader::ReadFile(st inputconfig){
+    bool FileStatus = true;
     //if ((configfile = fopen(inputconfig.c_str(),"r")) == NULL) {
     if ((configfile = fopen(inputconfig.c_str(),"r")) == 0) {
 	std::cout << std::endl << "Check input file (" << inputconfig << ")." << std::endl << std::endl;
+        FileStatus = false;
     }  // need error
-
+    return FileStatus;
 }
 
 void TextReader::ReadVariables() {

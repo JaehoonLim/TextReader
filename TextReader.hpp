@@ -1,4 +1,4 @@
-// TextReader v2.11
+// TextReader v2.10
 
 #ifndef __TextReader_hpp_Inclueded__
 #define __TextReader_hpp_Inclueded__
@@ -28,7 +28,7 @@ public:
 
     TextReader();
     ~TextReader();
-    bool ReadFile(st);
+    void ReadFile(st);
     void ReadVariables();
     void PrintoutVariables();
 
